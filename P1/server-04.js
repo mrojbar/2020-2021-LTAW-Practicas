@@ -13,7 +13,7 @@ function print_info_req(req) {
     console.log("Version: " + req.httpVersion)
     console.log("Cabeceras: ");
 
-    //-- Recorrer todas las cabeceras disponislbes
+    //-- Recorrer todas las cabeceras disponibles
     //-- imprimiendo su nombre y su valor
     for (hname in req.headers)
       console.log(`  * ${hname}: ${req.headers[hname]}`);
@@ -55,5 +55,4 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PUERTO);
-
 console.log("Ejemplo 2. Happy Server listo!. Escuchando en puerto: " + PUERTO);
