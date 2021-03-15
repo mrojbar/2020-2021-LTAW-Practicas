@@ -1,0 +1,10 @@
+{
+    "nombre": "bola",
+    "posicion":{
+        "x": 30,
+        "y": 3456.4
+    },
+    "estado": "muerto",
+    "habilitado": false,
+    "array": [50, 3, "hola"]
+}
