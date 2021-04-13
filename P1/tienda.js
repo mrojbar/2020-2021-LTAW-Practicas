@@ -1,58 +1,86 @@
 const http = require('http');
+const url = require('url');
+const fs = require('fs');
+const PUERTO = 8080
+let count = 0;
+let CABECERAS = false;
 
-const PUERTO = 80;
+//-- Configurar y lanzar el servidor.
 
-//-- Imprimir informacion sobre el mensaje de solicitud
-function print_info_req(req) {
-
-    console.log("");
-    console.log("Mensaje de solicitud");
-    console.log("====================");
-    console.log("Método: " + req.method);
-    console.log("Recurso: " + req.url);
-    console.log("Version: " + req.httpVersion)
+http.createServer((req, res) => {
+  count++;
+  console.log("");
+  console.log("----------> Peticion recibida")
+  console.log("======================");
+  console.log("Mensaje de solicitud "+ count);
+  console.log("Método: " + req.method);
+  console.log("Version: " + req.httpVersion)
+  if (CABECERAS){
     console.log("Cabeceras: ");
-
-    //-- Recorrer todas las cabeceras disponibles
-    //-- imprimiendo su nombre y su valor
     for (hname in req.headers)
       console.log(`  * ${hname}: ${req.headers[hname]}`);
+  }
 
-    //-- Construir el objeto url con la url de la solicitud
-    const myURL = new URL(req.url, 'http://' + req.headers['host']);
-    console.log("URL completa: " + myURL.href);
-    console.log("  Ruta: " + myURL.pathname);
-}
+  //-- Construir el objeto url con la url de la solicitud
+  const q = new URL(req.url, 'http://' + req.headers['host']);
+  console.log("URL completa: " + q.href);
+  console.log("Recurso:" + q.pathname);
+  console.log("Host: " + q.host);
 
-//-- SERVIDOR: Bucle principal de atención a clientes
-const server = http.createServer((req, res) => {
+  let filename = ""
+  let recurso = ""
+  let mime = "text/"
 
-  //-- Petición recibida
-  //-- Imprimir información de la petición
-  print_info_req(req);
+  // -- Contar slash
+  var nSlash = (q.pathname.match(new RegExp("/", "g")) || []).length;
+  var nSlashDoble = (q.href.match(new RegExp("//", "g")) || []).length;
 
-  //-- Si hay datos en el cuerpo, se imprimen
-  req.on('data', (cuerpo) => {
+  // -- Buscamos el "." final para poder indicar que tipo mime es
+  let tipo = q.pathname.lastIndexOf(".")
+  let tipostr = q.pathname.slice(tipo+1) 
+  console.log("Este es el tipo: "+tipostr);
 
-    //-- Los datos del cuerpo son caracteres
-    req.setEncoding('utf8');
+  // -- If para completar el nombre del recurso y tipo mime del mismo
+  if (nSlash > 1) {
+    console.log("Entro en FOR");
+    recurso = "." + q.pathname
+    mime = mime + tipostr
+  } else {
+    if (tipostr == "/") {
+      mime = "text/html"
+      filename += "index.html"
+    } else {
+      mime = mime + tipostr
+    }
+    let peticion = q.pathname.lastIndexOf("/")
+    recurso = q.pathname.slice(peticion+1)
+  }
 
-    console.log("Cuerpo: ")
-    console.log(` * Tamaño: ${cuerpo.length} bytes`);
-    console.log(` * Contenido: ${cuerpo}`);
+  filename = filename + recurso;
+  console.log("Slash contados: "+nSlash);
+  console.log("Este es el filename: "+filename);
+  console.log("Este es el mime: "+mime);
+
+  //-- Leer fichero, data es el contenido del fichero leido
+  fs.readFile(filename, function(err, data) {
+    //-- Fichero no encontrado. Devolver mensaje de error
+    if (err) {
+      res.writeHead(404, {'Content-Type': 'text/html'});
+      res.end("404 Not found");
+    }
+    else {
+      //-- Generar el mensaje de respuesta
+      res.writeHead(200, {'Content-Type': mime});
+      res.write(data);
+      res.end();
+    }
+    console.log("");
+    console.log("======================");
+    console.log("Mensaje de respuesta "+count);
+    console.log("Respuesta: "+res.statusCode);
   });
 
-  //-- Esto solo se ejecuta cuando llega el final del mensaje de solicitud
-  req.on('end', ()=> {
-    console.log("Fin del mensaje");
+}).listen(PUERTO);
 
-    //-- Hayppy server. Generar respuesta
-    res.setHeader('Content-Type', 'text/plain');
-    res.write("Soy el happy server\n");
-    res.end()
-  });
-
-});
-
-server.listen(PUERTO);
-console.log("Ejemplo 2. Happy Server listo!. Escuchando en puerto: " + PUERTO);
+console.log("Servidor corriendo...")
+console.log("Puerto: " + PUERTO)

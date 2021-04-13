@@ -1,10 +1,114 @@
-html {
-    font-size: 70%;
+/*ajusta el tamaño de las cajas ignorando el padding*/
+* {
     box-sizing: border-box;
   }
-
-body {
-font-family: fuente;
-background-image: url(back_noise.jpg);
+  
+  @font-face{
+  font-family:'titulo';
+  src: url('ROBOT.ttf');
+  }
+  
+  @font-face{
+  font-family:'texto';
+  src: url('DIN.ttf');
+  }
+  
+  body {
+    background-color: #D22525;
+    font-family: texto;
+  }
+  
+  /* Titulo */
+  header {
+    font-family: titulo;
+    background-color: #111;
+    background-image: url(gif.gif);
+    padding: 10px;
+    text-align: center;
+    font-size: 70px;
+    color: #D22525;
+    text-shadow: 2px 2px 40px #4E0000;
+    border-bottom: 10px solid;
+  }
+  
+  /* columna */
+  nav {
+    float: left;
+    width: 25%;
+    height: 1500px;
+    background: #ddd;
+    padding: 10px;
+    padding-right: 20px;
+  }
+  
+  /* contenido */
+  article {
+    float: left;
+    padding: 30px;
+    width: 75%;
+    background-image: url(black.jpg);
+    color: white;
+    height: 1500px;
+  }
+  
+  /* pie de pagina */
+  footer {
+    background-color: #111;
+    padding: 10px;
+    text-align: center;
+    color: white;
+  }
+  
+  h1 {
+    font-size: 200%;
+    font-weight: 100;
+    border-bottom: 4px solid;
+  }
+  
+  h2 {
+    border-bottom: 3px solid;
+    border-color: #D22525;
+    font-size: 150%;
+  }
+  
+  h3 {
+    font-size: 130%;
+  }
+  
+  /* Lista sin puntos en el menu*/
+  #nopuntos {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  #centro {
+    text-align: center;
+  }
+  /* Sombra de la foto de perfil*/
+  #sombraFoto {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    width: 200px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  #sombraObjeto {
+    box-shadow: 0 0px 70px 0 rgba(0, 0, 0, 0.4);
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  /* Si la resolucion de la pantalla es menor de 900px se apilan las secciones */
+  @media (max-width: 900px) {
+    nav, article {
+      width: 100%;
+      height: auto;
     }
-    
+  }
+  
