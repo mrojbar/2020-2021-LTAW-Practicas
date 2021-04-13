@@ -19,7 +19,7 @@ const server = http.createServer((req, res) => {
     let content = MAIN;
   
     if (myURL.pathname == '/productos') {
-        content_type = "application/json";
+        content_type = "application/json"; //el server devuelve un objeto json en la respuesta.
         content = PRODUCTOS_JSON;
     }
   
