@@ -8,11 +8,6 @@
   src: url('ROBOT.ttf');
   }
   
-  @font-face{
-  font-family:'texto';
-  src: url('DIN.ttf');
-  }
-  
   body {
     background-color: #D22525;
     font-family: texto;
