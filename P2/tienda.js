@@ -4,8 +4,14 @@ const fs = require('fs');
 const PUERTO = 9000;
 let count = 0;
 let CABECERAS = false;
+const FICHERO_JSON = "tienda.json";
+const tienda_json = fs.readFileSync(FICHERO_JSON);
+const tienda = JSON.parse(tienda_json); // objeto tienda javascript
 
+//console.log(tienda[0]["orders"][0]["shoppinglist"][1]["name"]);
 //-- Configurar y lanzar el servidor.
+
+console.log("Productos en la tienda: " + tienda.length);
 
 http.createServer((req, res) => {
   count++;
@@ -45,33 +51,36 @@ http.createServer((req, res) => {
 
   // -- Recurso y Mime
 
-  if (tipostr != ""){ // recurso con extension: fichero
-    if (tipostr == "gif" || tipostr == "jpg" || tipostr == "png"){
+  if (tipostr != "") { // recurso con extension: fichero
+    if (tipostr == "gif" || tipostr == "jpg" || tipostr == "png") {
       mime += "image/" + tipostr;
     } else if (tipostr == "txt" || tipostr == "html" || tipostr == "css") {
       mime += "text/" + tipostr;
     } else if (tipostr == "ttf") {
       mime += "x-font-ttf";
+    } else if (tipostr == "json") {
+      mime += "application/"
     }
   } else { // recurso sin extension: directorio
     mime += "";
   }
 
-  if (nSlash > 1){ // cambio de directorio
+  if (nSlash > 1) { // cambio de directorio
     filename = "." + recurso;
   } else { // directorio raiz
-    if (recurso == "/"){ // fichero por defecto
+    if (recurso == "/") { // fichero por defecto
       filename = "index.html";
       mime += "text/html"
-    } else{
+    } else {
       filename = recurso.slice(recurso.lastIndexOf("/") + 1); // ruta
     }
   }
 
   //-- Leer fichero, data es el contenido del fichero leido
   fs.readFile(filename, function (err, data) {
+    if (recurso == '/productos') devuelveJsonProductos(res); // caso de acceso a productos
     //-- Fichero no encontrado. Devolver mensaje de error
-    if (err) {
+    else if (err) {
       res.writeHead(404, { 'Content-Type': 'text/html' });
       res.end("404 Not found");
     }
@@ -94,3 +103,9 @@ http.createServer((req, res) => {
 
 console.log("Servidor corriendo...")
 console.log("Puerto: " + PUERTO)
+
+function devuelveJsonProductos(res) { // acceso especial al json de la tienda mediante directorio /productos
+  res.writeHead(200, { 'Content-Type': "application/json" });
+  res.write(JSON.stringify(tienda[1]["products"]));
+  res.end();
+}

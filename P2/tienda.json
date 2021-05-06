@@ -1,0 +1,55 @@
+[
+  {
+    "orders": [
+      {
+        "username": "pete1010",
+        "address": "calle patata 16",
+        "creditcard": "135256", 
+        "shoppinglist": [
+          {
+            "name": "Gorra",
+            "quantity": "2"
+          },
+          {
+            "name": "Zapatillas",
+            "quantity": "1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "products": [
+      {
+        "name": "Gorra",
+        "price": 20,
+        "stock": 11,
+        "description": "Gorra de colores - Regreso al Futuro II (1989)"
+      },
+      {
+        "name": "Zapatillas",
+        "price": 75,
+        "stock": 8,
+        "description": "Zapatillas Nike futuristas - Regreso al Futuro II (1989)"
+      },
+      {
+        "name": "Hoverboard",
+        "price": 100,
+        "stock": 4,
+        "description": "Skate volador - Regreso al Futuro II (1989)"
+      }
+    ]
+  },
+  {
+    "users": [
+      {
+        "fullname": "Pedro Ramirez",
+        "username": "pete1010"
+      },
+      {
+        "fullname": "Bill Jones",
+        "username": "billthebest7"
+      }
+    ]
+  }
+]

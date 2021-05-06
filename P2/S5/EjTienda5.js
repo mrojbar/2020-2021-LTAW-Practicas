@@ -1,3 +1,5 @@
+//---------- pide un objeto json de un servidor, lo guarda en una variable.
+
 const https = require('https');
 
 const ENDPOINT = "https://www.metaweather.com/api/location/766273/";
