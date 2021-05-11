@@ -2,17 +2,17 @@
   {
     "orders": [
       {
-        "username": "pete1010",
+        "username": "pdr1010",
         "address": "calle patata 16",
-        "creditcard": "135256", 
+        "creditcard": "135256",
         "shoppinglist": [
           {
             "name": "Gorra",
-            "quantity": "2"
+            "quantity": 2
           },
           {
             "name": "Zapatillas",
-            "quantity": "1"
+            "quantity": 1
           }
         ]
       }
@@ -44,7 +44,7 @@
     "users": [
       {
         "fullname": "Pedro Ramirez",
-        "username": "pete1010"
+        "username": "pdr1010"
       },
       {
         "fullname": "Bill Jones",

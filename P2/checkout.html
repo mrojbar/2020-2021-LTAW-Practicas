@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title>Tienda</title>
+  <!-- Hoja de estilo -->
+  <link rel="stylesheet" href="/tienda.css">
+</head>
+<header>
+  <a href="/index.html">
+    <p>back to the future</p>
+  </a>
+  <p id="subheader">SHOP</p>
+</header>
+<div>
+  <article id="articlelleno">
+    <h2>CHECKOUT:</h2>
+    <h3>Introduzca sus datos para finalizar la compra:</h3>
+    <form action="/procesarcheckout" method="get">
+        Dirección de envio:
+        <input type="text" name="address"/>
+        <br>
+        <br>
+        Tarejta de crédito:
+        <input type="text" name="creditcard"/>
+        <br>
+        <br>
+        <input type="submit" value="Enviar"/>
+    </form>
+  </article>
+</div>
+<footer>
+  <p>_MRB_</p>
+</footer>
+</body>
+
+</html>
