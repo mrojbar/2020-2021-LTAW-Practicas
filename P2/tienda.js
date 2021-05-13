@@ -9,11 +9,26 @@ const tienda_json = fs.readFileSync(FICHERO_JSON);
 const tienda = JSON.parse(tienda_json); // objeto tienda javascript
 
 // -- Objetos generados.
+const INDEX = fs.readFileSync('index.html', 'utf-8');
+const CAP = fs.readFileSync('cap.html', 'utf-8');
+const NIKE = fs.readFileSync('nike.html', 'utf-8');
+const BOARD = fs.readFileSync('board.html', 'utf-8');
+
 const ERROR404 = fs.readFileSync('404.html', 'utf-8');
 const LOGIN = fs.readFileSync('login.html', 'utf-8');
 const LOGINOK = fs.readFileSync('loginok.html', 'utf-8');
 const CHECKOUT = fs.readFileSync('checkout.html', 'utf-8');
 const CHECKOUTOK = fs.readFileSync('checkoutok.html', 'utf-8');
+
+const shoppinglist = {
+  name: "",
+  quantity: ""
+}
+
+let orderslistNAME = []; //-- lista de pedidos de cada objeto unico
+let orderslistNUM = []; //-- lista de numero de pedidos de cada objeto unico
+let ordersobject = []; //objeto lista de la compra
+let ordersobjectlist = []; //lista de objetos de la lista de la compra
 
 //console.log(tienda[0]["orders"][0]["shoppinglist"][1]["name"]);
 //-- Configurar y lanzar el servidor.
@@ -102,31 +117,109 @@ http.createServer((req, res) => {
   }
 
   // -------- Recurso dinámico sin extension (menos recurso por defecto): Generar recurso.
-  if (tipostr == "" && recurso != "/") {
+  if (tipostr == "") {
     let datagen = ""; // datos generados.
+    let realname = ""; 
 
-    if (recurso == '/productos') {// caso de acceso a productos
+    if (recurso == '/' || recurso == '/index') {
+      if (get_cookie(req, "username") != null) { //-- ya hay una sesion iniciada    
+        tienda[2]["users"].forEach((element, index) => {
+          if (get_cookie(req, "username") == element.username) realname = element.fullname;
+        });
+        datagen = INDEX.replace("HTML_EXTRA", "<h1>Hola " + realname + " :)</h1>");
+      }
+      else {
+        datagen = INDEX.replace("HTML_EXTRA", "");
+      }
+    }
+
+    else if (recurso == '/cap') {
+      if (get_cookie(req, "username") != null) { //-- ya hay una sesion iniciada    
+        tienda[2]["users"].forEach((element, index) => {
+          if (get_cookie(req, "username") == element.username) realname = element.fullname;
+        });
+        datagen = CAP.replace("HTML_EXTRA", "<h1>Hola " + realname + " :)</h1>");
+      }
+      else {
+        datagen = CAP.replace("HTML_EXTRA", "");
+      }
+    }
+
+    else if (recurso == '/board') {
+      if (get_cookie(req, "username") != null) { //-- ya hay una sesion iniciada    
+        tienda[2]["users"].forEach((element, index) => {
+          if (get_cookie(req, "username") == element.username) realname = element.fullname;
+        });
+        datagen = BOARD.replace("HTML_EXTRA", "<h1>Hola " + realname + " :)</h1>");
+      }
+      else {
+        datagen = BOARD.replace("HTML_EXTRA", "");
+      }
+    }
+
+    else if (recurso == '/nike') {
+      if (get_cookie(req, "username") != null) { //-- ya hay una sesion iniciada    
+        tienda[2]["users"].forEach((element, index) => {
+          if (get_cookie(req, "username") == element.username) realname = element.fullname;
+        });
+        datagen = NIKE.replace("HTML_EXTRA", "<h1>Hola " + realname + " :)</h1>");
+      }
+      else {
+        datagen = NIKE.replace("HTML_EXTRA", "");
+      }
+    }
+
+    else if (recurso == '/productos') {// caso de acceso a productos
       mime = "application/json";
       datagen = JSON.stringify(tienda[1]["products"]);
     }
 
     else if (recurso == '/login') {
       mime = "text/html"
-      datagen = LOGIN;
+      if (get_cookie(req, "username") != null) { //-- ya hay una sesion iniciada
+        datagen = LOGINOK.replace("HTML_EXTRA", "<h3>Cierra la sesión actual antes de abrir una nueva sesión.</h3>");
+      }
+      else { //-- no hay sesion iniciada
+        datagen = LOGIN;
+      }
     }
 
     else if (recurso == '/checkout') {
       mime = "text/html"
+      res.setHeader('Set-Cookie', "shoppinglist=Gorra:Zapatillas:Zapatillas:Hoverboard:Gorra:Hoverboard:Hoverboard"); //--------- crear cookie lista de test, esto va en el boton de comprar.
+      let orderslist = get_cookie(req, "shoppinglist").split(":"); //-- lee la cookie de los pedidos.
+
+      orderslist.forEach((element,index) => { //-- busca elementos repetidos en el array
+        if (orderslistNAME.includes(element)){
+          orderslistNUM[orderslistNAME.indexOf(element)]++;
+        }
+        else{
+          orderslistNAME[index]=element;
+          orderslistNUM[index]=1;
+        }
+      });
+
+      console.log(orderslistNAME);
+      console.log(orderslistNUM);
+
+      orderslistNAME.forEach((element,index) => {
+        ordersobject = Object.create(shoppinglist); //-- crear nuevo objeto de producto pedido
+        ordersobject.name = element; //-- asignar el nombre del producto al objeto
+        ordersobject.quantity = orderslistNUM[index]; // numero de productos
+        ordersobjectlist.push(ordersobject); //-- meter objeto en la lista de objetos
+      });
+      console.log(ordersobjectlist);// -- lista de pedidos.
       datagen = CHECKOUT.replace("HTML_EXTRA", "");
+      datagen = datagen.replace("HTML_CARRITO", "Cosillas"); ///////////////// meter aqui una lista legible de cosas.
     }
 
     else if (recurso.startsWith("/procesarlogin")) {
       mime = "text/html"
       foundflag = false;
       let username = url.searchParams.get('nombre');
-      let realname = "";
+      realname = "";
       tienda[2]["users"].forEach((element, index) => {
-        if (element.username == username){
+        if (element.username == username) {
           foundflag = true; //-- el usuario existe en la base de datos
           realname = element.fullname;
         }
@@ -139,18 +232,20 @@ http.createServer((req, res) => {
       else datagen = LOGIN;
     }
 
-    else if (recurso.startsWith("/logout")){
+    else if (recurso.startsWith("/logout")) {
+      mime = "text/html";
       res.setHeader('Set-Cookie', "username="); //-- borrar cookie de login
       datagen = LOGINOK.replace("HTML_EXTRA", "<h3>SE HA CERRADO LA SESIÓN. HASTA PRONTO</h3>");;
     }
-    
+
     else if (recurso.startsWith("/procesarcheckout")) {
       mime = "text/html";
       let foundflag = false;
       let address = url.searchParams.get('address');
       let creditcard = url.searchParams.get('creditcard');
       let username = get_cookie(req, "username") //-- usuario actual
-      let shoppinglist = ""; // -------- EJ COOKIES cambiar por carrito actual
+      let shoppinglist = ordersobjectlist; // -------- COMPROBAR SI ESTA VACIO PARA ABORTAR.
+      console.log(ordersobject);
 
       if (address == "" || creditcard == "") { // datos vacios
         console.log("DATOS VACIOS");
