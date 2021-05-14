@@ -116,10 +116,13 @@ http.createServer((req, res) => {
     }
   }
 
+  console.log("Filename: "+filename);
+
   // -------- Recurso dinámico sin extension (menos recurso por defecto): Generar recurso.
   if (tipostr == "") {
+    
     let datagen = ""; // datos generados.
-    let realname = ""; 
+    let realname = "";
 
     if (recurso == '/' || recurso == '/index') {
       if (get_cookie(req, "username") != null) { //-- ya hay una sesion iniciada    
@@ -145,7 +148,37 @@ http.createServer((req, res) => {
       }
     }
 
+    else if (recurso == '/buycap') {
+      let orders = get_cookie(req,"shoppinglist");
+      if (orders == null) orders = "";
+      res.setHeader('Set-Cookie', "shoppinglist="+orders+"Gorra:");
+      if (get_cookie(req, "username") != null) { //-- ya hay una sesion iniciada    
+        tienda[2]["users"].forEach((element, index) => {
+          if (get_cookie(req, "username") == element.username) realname = element.fullname;
+        });
+        datagen = CAP.replace("HTML_EXTRA", "<h1>Hola " + realname + " :)</h1>");
+      }
+      else {
+        datagen = CAP.replace("HTML_EXTRA", "");
+      }
+    }
+
     else if (recurso == '/board') {
+      if (get_cookie(req, "username") != null) { //-- ya hay una sesion iniciada    
+        tienda[2]["users"].forEach((element, index) => {
+          if (get_cookie(req, "username") == element.username) realname = element.fullname;
+        });
+        datagen = BOARD.replace("HTML_EXTRA", "<h1>Hola " + realname + " :)</h1>");
+      }
+      else {
+        datagen = BOARD.replace("HTML_EXTRA", "");
+      }
+    }
+
+    else if (recurso == '/buyboard') {
+      let orders = get_cookie(req,"shoppinglist");
+      if (orders == null) orders = "";
+      res.setHeader('Set-Cookie', "shoppinglist="+orders+"Hoverbaord:");
       if (get_cookie(req, "username") != null) { //-- ya hay una sesion iniciada    
         tienda[2]["users"].forEach((element, index) => {
           if (get_cookie(req, "username") == element.username) realname = element.fullname;
@@ -169,6 +202,21 @@ http.createServer((req, res) => {
       }
     }
 
+    else if (recurso == '/buynike') {
+      let orders = get_cookie(req,"shoppinglist");
+      if (orders == null) orders = "";
+      res.setHeader('Set-Cookie', "shoppinglist="+orders+"Zapatillas:");
+      if (get_cookie(req, "username") != null) { //-- ya hay una sesion iniciada    
+        tienda[2]["users"].forEach((element, index) => {
+          if (get_cookie(req, "username") == element.username) realname = element.fullname;
+        });
+        datagen = NIKE.replace("HTML_EXTRA", "<h1>Hola " + realname + " :)</h1>");
+      }
+      else {
+        datagen = NIKE.replace("HTML_EXTRA", "");
+      }
+    }
+
     else if (recurso == '/productos') {// caso de acceso a productos
       mime = "application/json";
       datagen = JSON.stringify(tienda[1]["products"]);
@@ -180,37 +228,48 @@ http.createServer((req, res) => {
         datagen = LOGINOK.replace("HTML_EXTRA", "<h3>Cierra la sesión actual antes de abrir una nueva sesión.</h3>");
       }
       else { //-- no hay sesion iniciada
-        datagen = LOGIN;
+        datagen = LOGIN.replace("HTML_EXTRA", "");;
       }
     }
 
     else if (recurso == '/checkout') {
+
+      orderslistNAME = []; //-- vaciar las listas.
+      orderslistNUM = [];
+      ordersobjectlist = [];
+      stringcarrito = "";
       mime = "text/html"
-      res.setHeader('Set-Cookie', "shoppinglist=Gorra:Zapatillas:Zapatillas:Hoverboard:Gorra:Hoverboard:Hoverboard"); //--------- crear cookie lista de test, esto va en el boton de comprar.
-      let orderslist = get_cookie(req, "shoppinglist").split(":"); //-- lee la cookie de los pedidos.
 
-      orderslist.forEach((element,index) => { //-- busca elementos repetidos en el array
-        if (orderslistNAME.includes(element)){
-          orderslistNUM[orderslistNAME.indexOf(element)]++;
-        }
-        else{
-          orderslistNAME[index]=element;
-          orderslistNUM[index]=1;
-        }
-      });
-
-      console.log(orderslistNAME);
-      console.log(orderslistNUM);
-
-      orderslistNAME.forEach((element,index) => {
-        ordersobject = Object.create(shoppinglist); //-- crear nuevo objeto de producto pedido
-        ordersobject.name = element; //-- asignar el nombre del producto al objeto
-        ordersobject.quantity = orderslistNUM[index]; // numero de productos
-        ordersobjectlist.push(ordersobject); //-- meter objeto en la lista de objetos
-      });
-      console.log(ordersobjectlist);// -- lista de pedidos.
-      datagen = CHECKOUT.replace("HTML_EXTRA", "");
-      datagen = datagen.replace("HTML_CARRITO", "Cosillas"); ///////////////// meter aqui una lista legible de cosas.
+      if (get_cookie(req, "shoppinglist") == null) {
+        datagen = datagen = CHECKOUTOK.replace("HTML_EXTRA", "<h3>CHECKOUT INCORRECTO.</h3><p>Debe tener objetos en el carrito.</p>");
+      }
+      else {
+        let orderslist = get_cookie(req, "shoppinglist").split(":"); //-- lee la cookie de los pedidos.
+        orderslist.pop(); // quitar el : del final.
+        let stringcarrito = '';
+        orderslist.forEach((element, index) => { //-- busca elementos repetidos en el array
+          if (orderslistNAME.includes(element)) {
+            orderslistNUM[orderslistNAME.indexOf(element)]++;
+          }
+          else {
+            orderslistNAME[index] = element;
+            orderslistNUM[index] = 1;
+          }
+        });
+        console.log(orderslistNAME);
+        console.log(orderslistNUM);
+        orderslistNAME.forEach((element, index) => {
+          ordersobject = Object.create(shoppinglist); //-- crear nuevo objeto de producto pedido
+          ordersobject.name = element; //-- asignar el nombre del producto al objeto
+          ordersobject.quantity = orderslistNUM[index]; // numero de productos
+          ordersobjectlist.push(ordersobject); //-- meter objeto en la lista de objetos
+          stringcarrito = stringcarrito + element + "&emsp;Cantidad:&emsp;" + orderslistNUM[index] + "<br>"; //-- texto resumen del pedido
+          console.log(stringcarrito); ///////////
+        });
+        console.log(ordersobjectlist);// -- lista de pedidos.
+        datagen = CHECKOUT.replace("HTML_EXTRA", "");
+        datagen = datagen.replace("HTML_CARRITO", stringcarrito); ///////////////// meter aqui una lista legible de cosas.
+      }
     }
 
     else if (recurso.startsWith("/procesarlogin")) {
@@ -229,13 +288,12 @@ http.createServer((req, res) => {
         res.setHeader('Set-Cookie', "username=" + username); //-- generar cookie de login
         console.log("login de: " + get_cookie(req, "username"));
       }
-      else datagen = LOGIN;
+      else datagen = LOGIN.replace("HTML_EXTRA", "<h3>LOGIN INCORRECTO</h3>");
     }
 
     else if (recurso.startsWith("/logout")) {
-      mime = "text/html";
-      res.setHeader('Set-Cookie', "username="); //-- borrar cookie de login
-      datagen = LOGINOK.replace("HTML_EXTRA", "<h3>SE HA CERRADO LA SESIÓN. HASTA PRONTO</h3>");;
+      res.setHeader('Set-Cookie', ["shoppinglist=", "username="]); //-- borrar cookies
+      datagen = LOGINOK.replace("HTML_EXTRA", "<h3>SE HA CERRADO LA SESIÓN. HASTA PRONTO</h3>");
     }
 
     else if (recurso.startsWith("/procesarcheckout")) {
@@ -250,9 +308,11 @@ http.createServer((req, res) => {
       if (address == "" || creditcard == "") { // datos vacios
         console.log("DATOS VACIOS");
         datagen = CHECKOUT.replace("HTML_EXTRA", "<h3>NO SE PUEDE PROCEDER: HAY DATOS VACÍOS</h3>");
+        datagen = datagen.replace("HTML_CARRITO", "")
       }
       else if (username == null) { // no ha inicado sesion
         datagen = CHECKOUT.replace("HTML_EXTRA", "<h3>DEBE INICIAR SESION PRIMERO PARA PODER REALIZAR LA COMPRA</h3>");
+        datagen = datagen.replace("HTML_CARRITO", "")
       }
       else {
         console.log("Direccion: " + address + " Tarjeta: " + creditcard);
@@ -276,14 +336,16 @@ http.createServer((req, res) => {
         }
         // -- escribir archivo json
         console.log(JSON.stringify(tienda[0]["orders"])); ////// -- debug
-        fs.writeFileSync("tiendaout.json", JSON.stringify(tienda));
-        datagen = CHECKOUTOK;
+        fs.writeFileSync(FICHERO_JSON, JSON.stringify(tienda));
+        res.setHeader('Set-Cookie',"shoppinglist="); //-- borrar carrito
+        datagen = CHECKOUTOK.replace("HTML_EXTRA", "<h3>CHECKOUT CORRECTO.</h3><p>Pueve volver a la página principal.</p>");
       }
     }
 
     else { // -- Si el recurso no existe
       res.writeHead(404, { 'Content-Type': 'text/html' });
       res.end(ERROR404);
+      return; // -- return evitar write after end
     }
 
     // -- El recurso existe: escribir recurso generado.
@@ -300,6 +362,7 @@ http.createServer((req, res) => {
       if (err) {
         res.writeHead(404, { 'Content-Type': 'text/html' });
         res.end(ERROR404);
+        return;
       }
       else {
         //-- Generar el mensaje de respuesta
