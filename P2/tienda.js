@@ -30,7 +30,18 @@ let orderslistNUM = []; //-- lista de numero de pedidos de cada objeto unico
 let ordersobject = []; //objeto lista de la compra
 let ordersobjectlist = []; //lista de objetos de la lista de la compra
 
-//console.log(tienda[0]["orders"][0]["shoppinglist"][1]["name"]);
+let prodarray = [];
+
+//-- funcion que crea un json con los productos de la tienda
+function get_json_prods(tienda, prodarray) {
+  tienda[1]["products"].forEach((element) => {
+    prodarray.push(element.name);
+  });
+  return JSON.stringify(prodarray);
+}
+
+let jsonprods = get_json_prods(tienda, prodarray);
+
 //-- Configurar y lanzar el servidor.
 
 console.log("Productos en la tienda: " + tienda.length);
@@ -116,11 +127,11 @@ http.createServer((req, res) => {
     }
   }
 
-  console.log("Filename: "+filename);
+  console.log("Filename: " + filename);
 
   // -------- Recurso dinámico sin extension (menos recurso por defecto): Generar recurso.
   if (tipostr == "") {
-    
+
     let datagen = ""; // datos generados.
     let realname = "";
 
@@ -149,9 +160,9 @@ http.createServer((req, res) => {
     }
 
     else if (recurso == '/buycap') {
-      let orders = get_cookie(req,"shoppinglist");
+      let orders = get_cookie(req, "shoppinglist");
       if (orders == null) orders = "";
-      res.setHeader('Set-Cookie', "shoppinglist="+orders+"Gorra:");
+      res.setHeader('Set-Cookie', "shoppinglist=" + orders + "Gorra:");
       if (get_cookie(req, "username") != null) { //-- ya hay una sesion iniciada    
         tienda[2]["users"].forEach((element, index) => {
           if (get_cookie(req, "username") == element.username) realname = element.fullname;
@@ -176,9 +187,9 @@ http.createServer((req, res) => {
     }
 
     else if (recurso == '/buyboard') {
-      let orders = get_cookie(req,"shoppinglist");
+      let orders = get_cookie(req, "shoppinglist");
       if (orders == null) orders = "";
-      res.setHeader('Set-Cookie', "shoppinglist="+orders+"Hoverbaord:");
+      res.setHeader('Set-Cookie', "shoppinglist=" + orders + "Hoverbaord:");
       if (get_cookie(req, "username") != null) { //-- ya hay una sesion iniciada    
         tienda[2]["users"].forEach((element, index) => {
           if (get_cookie(req, "username") == element.username) realname = element.fullname;
@@ -203,9 +214,9 @@ http.createServer((req, res) => {
     }
 
     else if (recurso == '/buynike') {
-      let orders = get_cookie(req,"shoppinglist");
+      let orders = get_cookie(req, "shoppinglist");
       if (orders == null) orders = "";
-      res.setHeader('Set-Cookie', "shoppinglist="+orders+"Zapatillas:");
+      res.setHeader('Set-Cookie', "shoppinglist=" + orders + "Zapatillas:");
       if (get_cookie(req, "username") != null) { //-- ya hay una sesion iniciada    
         tienda[2]["users"].forEach((element, index) => {
           if (get_cookie(req, "username") == element.username) realname = element.fullname;
@@ -219,7 +230,32 @@ http.createServer((req, res) => {
 
     else if (recurso == '/productos') {// caso de acceso a productos
       mime = "application/json";
-      datagen = JSON.stringify(tienda[1]["products"]);
+      datagen = get_json_prods(tienda, prodarray);
+    }
+
+    else if (recurso == '/busqueda') {
+      mime = "application/json";
+      console.log("JSONPRODS: " + jsonprods);
+      //-- Leer los parámetros
+      let param = url.searchParams.get('param');
+      param = param.toUpperCase();
+
+      console.log("  Param: " + param);
+      let result = [];
+
+      for (let prod of JSON.parse(jsonprods)) {
+        //-- Pasar a mayúsculas
+        prodU = prod.toUpperCase();
+        //-- Si el producto comienza por lo indicado en el parametro
+        //-- meter este producto en el array de resultados
+        console.log(prodU);
+        if (prodU.startsWith(param)) {
+          result.push(prod);
+        }
+      }
+
+      console.log(result);
+      datagen = JSON.stringify(result);
     }
 
     else if (recurso == '/login') {
@@ -337,7 +373,7 @@ http.createServer((req, res) => {
         // -- escribir archivo json
         console.log(JSON.stringify(tienda[0]["orders"])); ////// -- debug
         fs.writeFileSync(FICHERO_JSON, JSON.stringify(tienda));
-        res.setHeader('Set-Cookie',"shoppinglist="); //-- borrar carrito
+        res.setHeader('Set-Cookie', "shoppinglist="); //-- borrar carrito
         datagen = CHECKOUTOK.replace("HTML_EXTRA", "<h3>CHECKOUT CORRECTO.</h3><p>Pueve volver a la página principal.</p>");
       }
     }
