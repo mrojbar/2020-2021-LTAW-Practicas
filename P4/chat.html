@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./chat.css">
+  <title>Chat</title>
+
+  <!-- Cargar la biblioteca Socket.IO. Nos la debe entregar el servidor -->
+  <script src="/socket.io/socket.io.js"></script>
+
+  <!-- Cliente que usa los Sockets.io-->
+  <script src="chat_client.js" defer></script>
+</head>
+
+<body>
+  <h1>MINI CHAT SERVER</h1>
+  <h2>Mensajes recibidos</h2>
+  <div>
+    <nav>
+    INFO:
+    <h2>Usuarios conectados</h2>
+    <h3 id="num_users"></h3>
+    <h2>Información de versión</h2>
+    Node:
+    <h3 id="node_version"></h3>
+    Electron:
+    <h3 id="electron_version"></h3>
+    Chrome:
+    <h3 id="chrome_version"></h3>
+    <h2>Direccion IP de clientes</h2>
+    <h3 id="ip"></h3>
+    <h2>Arquitectura</h2>
+    <h3 id="arch"></h3>
+    <h2>Plataforma</h2>
+    <h3 id="plat"></h3>
+    </nav>
+    <article id="sombraObjeto">
+      <br>
+      <p id="display"></p>
+      <br>
+    </article>
+  </div>
+  <footer>
+    <input type="text" placeholder="Escribe aquí los mensajes..." autocomplete="off" id="msg_entry">
+    <p><input type="button" value="BOTON DE PRUEBA" id="test_button"></p>
+  </footer>
+</body>
+</html>

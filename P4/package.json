@@ -1,0 +1,41 @@
+{
+    "name": "electron-chat",
+    "description": "Chat Electron",
+    "version": "0.1.0",
+    "main": "chat_server.js",
+    "author": {
+        "name": "MRB"
+    },
+    "homepage": "",
+    "license": "LGPL",
+    "scripts": {
+        "start": "electron .",
+        "pack": "electron-builder --dir",
+        "dist": "electron-builder",
+        "postinstall": "electron-builder install-app-deps"
+    },
+    "build": {
+        "appId": "mi-electron-app-1-id",
+        "linux": {
+            "target": [
+                "AppImage"
+            ],
+            "category": "Utility"
+        },
+        "win": {
+            "target": [
+                "NSIS"
+            ]
+        }
+    },
+    "devDependencies": {
+        "electron": "^12.0.9"
+    },
+    "dependencies": {
+        "colors": "^1.4.0",
+        "express": "^4.17.1",
+        "ip": "^1.1.5",
+        "socket.io": "^4.1.2",
+        "websockets": "^0.2.0"
+    }
+}

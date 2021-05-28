@@ -1,9 +1,9 @@
 {
-    "name": "ejemplo-9",
-    "description": "Ej9",
+    "name": "mini-chat",
+    "description": "chat",
     "version": "0.0.1",
     "author": "MRB",
-    "main": "Ej-09.js",
+    "main": "chat_server.js",
     "license": "GPL-3.0",
     "dependencies": {
         "colors": "^1.4.0",
