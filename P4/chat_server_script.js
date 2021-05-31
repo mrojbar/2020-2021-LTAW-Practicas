@@ -1,4 +1,5 @@
 const electron = require('electron');
+const QRCode = require('qrcode')
 
 //-- Elementos del interfaz
 const display = document.getElementById("display");
@@ -12,8 +13,6 @@ const arch = document.getElementById("arch");
 const plat = document.getElementById("plat");
 const test_button = document.getElementById("test_button");
 
-console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-
 //-- Renderer de Electron esperando a eventos.
 //-- Evento de numero de usuarios
 electron.ipcRenderer.on('num_users', (event, message) => {
@@ -26,7 +25,16 @@ electron.ipcRenderer.on('data', (event, message) => {
   node_version.textContent = message[1];
   electron_version.textContent = message[2];
   chrome_version.textContent = message[3];
-  ip.textContent = message[4] +":"+ message[6] +"/public/"+ message[5];
+  //var URLclientes = "http://" + message[4] +":"+ message[6] +"/public/"+ message[5];
+  var URLclientes = "http://" + message[4] +":"+ message[6] +"/public/"+ message[5];
+  ip.textContent = URLclientes;
+
+  // generador de código QR (Mejora opcional)
+  QRCode.toDataURL(URLclientes, function (err, url) {
+    var QRimage = document.getElementById('QRimage')
+    QRimage.src = url;
+  })
+  
   arch.textContent = message[7];
   plat.textContent = message[8];
 });

@@ -44,7 +44,7 @@
   nav {
     float: left;
     font-size: 100%;
-    width: 40%;
+    width: 50%;
     background: rgb(20, 20, 20);
     color: white;
     padding: 10px;
@@ -78,7 +78,7 @@
   /* contenido */
   article {
     float: left;
-    width: 60%;
+    width: 50%;
     color: white;
     font-weight: 500;
     background-color: #111;

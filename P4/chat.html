@@ -12,7 +12,7 @@
   <script src="/socket.io/socket.io.js"></script>
 
   <!-- Cliente que usa los Sockets.io-->
-  <script src="chat_client.js" defer></script>
+  <script src="chat_server_script.js" defer></script>
 </head>
 
 <body>
@@ -30,8 +30,9 @@
     <h3 id="electron_version"></h3>
     Chrome:
     <h3 id="chrome_version"></h3>
-    <h2>Direccion IP de clientes</h2>
+    <h2>Direccion IP para clientes</h2>
     <h3 id="ip"></h3>
+    <img src="" alt="QRimage" id="QRimage">
     <h2>Arquitectura</h2>
     <h3 id="arch"></h3>
     <h2>Plataforma</h2>

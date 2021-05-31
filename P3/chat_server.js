@@ -46,6 +46,7 @@ io.on('connect', (socket) => {
   socket.on('disconnect', function () {
     num_users--;
     console.log('** CONEXIÓN TERMINADA.  '.yellow + num_users + ' USUARIOS**'.yellow);
+    io.send(str_server + "Un usuario abandonó el chat" + "<br>");
   });
 
   //-- Mensaje recibido: Reenviarlo a todos los clientes conectados

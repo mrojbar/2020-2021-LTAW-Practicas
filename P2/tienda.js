@@ -40,7 +40,8 @@ function get_json_prods(tienda, prodarray) {
   return JSON.stringify(prodarray);
 }
 
-let jsonprods = get_json_prods(tienda, prodarray);
+let jsonprods = null;
+jsonprods = get_json_prods(tienda, prodarray);
 
 //-- Configurar y lanzar el servidor.
 
@@ -230,7 +231,7 @@ http.createServer((req, res) => {
 
     else if (recurso == '/productos') {// caso de acceso a productos
       mime = "application/json";
-      datagen = get_json_prods(tienda, prodarray);
+      datagen = jsonprods;
     }
 
     else if (recurso == '/busqueda') {

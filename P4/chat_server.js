@@ -31,8 +31,8 @@ let win = null;
 let node_version = process.versions.node;
 let electron_version = process.versions.electron;
 let chrome_version = process.versions.chrome;
-
 let ip_addr = ip.address();
+
 let ui = "chat.html"
 
 let arquitectura = process.arch;
